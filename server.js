@@ -7,7 +7,7 @@ app.use(express.json());
 let pacientes = [
   { ficha: 1, dados: { nome: 'maria do rosario', status: 'atendido(a)' } },
   { ficha: 2, dados: { nome: 'bob da silva', status: 'em espera' } },
-  { ficha: 3, dados: { nome: 'Thx So Much', status: 'atendido(a)' } }
+  { ficha: 3, dados: { nome: 'Thx So Much', status: 'em atendimento' } }
 ];
 
 // get - listar todos
@@ -15,7 +15,20 @@ app.get('/pacientes', (req, res) => {
   res.json(pacientes);
 });
 
-// get - buscar por ficha
+// por status obs:deu trabalho fazer essa merda
+
+app.get('/pacientes', (req, res) => {
+  const { status } = req.query;
+  if (status) {
+    const filtro = pacientes.filter(p => p.dados.status === status);
+    return res.json(filtro);
+  } else {
+      res.status(404).json({ error: 'não há ninguém' });
+  }
+});
+
+
+/*get - buscar por ficha*/ 
 app.get('/pacientes/:ficha', (req, res) => {
   const ficha = parseInt(req.params.ficha);
   const paciente = pacientes.find(i => i.ficha === ficha);
@@ -26,7 +39,7 @@ app.get('/pacientes/:ficha', (req, res) => {
   }
 });
 
-// post - adicionar novo paciente
+/*post - adicionar novo paciente*/
 app.post('/pacientes', (req, res) => {
   const { nome, status } = req.body;
 
@@ -43,6 +56,24 @@ app.post('/pacientes', (req, res) => {
   res.status(201).json(novoPaciente);
 });
 
+
+/* put - atualização do paciente */
+app.put('/pacientes/:ficha', (req, res) => {
+  const ficha = parseInt(req.params.ficha);
+  const { nome, status } = req.body;
+
+  const paciente = pacientes.find(i => i.ficha === ficha);
+
+  if (!paciente) {
+    return res.status(404).json({ error: 'Paciente não encontrado' });
+  }
+
+  // Atualiza apenas se o dado for fornecido
+  if (nome) paciente.dados.nome = nome;
+  if (status) paciente.dados.status = status;
+
+  res.json({ message: 'Paciente atualizado', paciente });
+});
 
 
 
