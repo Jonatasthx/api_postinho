@@ -11,38 +11,33 @@ let pacientes = [
 ];
 
 
-app.get('/pacientes/:ficha', (req, res) => {
-  const ficha = parseInt(req.params.ficha);
-  const paciente = pacientes.find(i => i.ficha === ficha);
-  if (paciente) {
-    return res.json(paciente);
-  } else {
-    res.status(404).json({ error: 'Paciente não encontrado' });
-  }
-});
-
+// GET - lista todos os pacientes
 app.get('/pacientes', (req, res) => {
+  if (pacientes.length === 0) {
+    return res.status(404).json({ error: 'Não há pacientes cadastrados' });
+  }
   res.json(pacientes);
 });
 
-
+// GET - busca paciente específico
 app.get('/pacientes/:ficha', (req, res) => {
   const ficha = parseInt(req.params.ficha);
   const paciente = pacientes.find(i => i.ficha === ficha);
-  if (paciente) {
-     return res.json(paciente);
-  } else {
-    res.status(404).json({ error: 'Paciente não encontrado' });
+
+  if (!paciente) {
+    return res.status(404).json({ error: 'Paciente não encontrado' });
   }
+
+  res.json(paciente);
 });
 
 /*post - adicionar novo paciente*/
 app.post('/pacientes', (req, res) => {
   const { nome, status } = req.body;
   if (!nome || !status) {
-    res.status(400).json({ error: 'Nome e status são obrigatórios' });
+    return res.status(400).json({ error: 'Nome e status são obrigatórios' });
   }
-  const novoPaciente = {
+  let novoPaciente = {
     ficha: pacientes.length + 1,
     dados: { nome, status }
   };
@@ -51,25 +46,24 @@ app.post('/pacientes', (req, res) => {
 });
 
 
-/* put - atualização do paciente */
+/* put - atualização do paciente */ 
 app.put('/pacientes/:ficha', (req, res) => {
   const ficha = parseInt(req.params.ficha);
   const { nome, status } = req.body;
-
   const paciente = pacientes.find(i => i.ficha === ficha);
-
+   if (pacientes.length === 0) {
+    return res.status(404).json({ error: 'Não há pacientes cadastrados' });
+  }
   if (!paciente) {
     res.status(404).json({ error: 'Paciente não encontrado' });
   }
-
   if (nome) paciente.dados.nome = nome;
   if (status) paciente.dados.status = status;
-
   res.json({ message: 'Paciente atualizado', paciente });
 });
 
 
-/*apagar cpf*/
+/*apagar*/
 app.delete('/pacientes/:ficha', (req, res) => {
   const ficha = parseInt(req.params.ficha);
   const index = pacientes.findIndex(i => i.ficha === ficha);
