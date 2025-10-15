@@ -11,7 +11,7 @@ let pacientes = [
 ];
 
 
-app.get('/pacientes', (req, res) => {
+app.get('/pacientes/:ficha', (req, res) => {
   const { status } = req.query;
   if (status) {
     const filtro = pacientes.filter(p => p.dados.status === status);
