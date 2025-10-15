@@ -12,12 +12,12 @@ let pacientes = [
 
 
 app.get('/pacientes/:ficha', (req, res) => {
-  const { status } = req.query;
-  if (status) {
-    const filtro = pacientes.filter(p => p.dados.status === status);
-    return res.json(filtro);
+  const ficha = parseInt(req.params.ficha);
+  const paciente = pacientes.find(i => i.ficha === ficha);
+  if (paciente) {
+    return res.json(paciente);
   } else {
-      res.status(404).json({ error: 'não há ninguém' });
+    res.status(404).json({ error: 'Paciente não encontrado' });
   }
 });
 
