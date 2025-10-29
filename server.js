@@ -98,7 +98,7 @@ app.delete('/pacientes/:ficha', (req, res) => {
   if (index !== -1) {
     const pacienteApagado = pacientes.splice(index, 1);
 
-    // Reatribuir fichas conforme a nova ordem do array
+    // renova ordem do array
     pacientes.forEach((p, i) => {
       p.ficha = i + 1;
     });
