@@ -17,7 +17,8 @@ app.get('/pacientes', (req, res) => {
     console.log('não há pacientes')
     return res.status(404).json({ error: 'Não há pacientes cadastrados' });
   }
-  res.json(pacientes);
+  console.log('pacientes listados')
+  return res.json(pacientes);
 });
 
 
