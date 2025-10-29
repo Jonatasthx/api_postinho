@@ -11,76 +11,120 @@ let pacientes = [
 ];
 
 
+// GET - lista todos os pacientes
 app.get('/pacientes', (req, res) => {
-  const { status } = req.query;
-  if (status) {
-    const filtro = pacientes.filter(p => p.dados.status === status);
-    return res.json(filtro);
-  } else {
-      res.status(404).json({ error: 'não há ninguém' });
+  if (pacientes.length === 0) {
+    console.log('não há pacientes')
+    return res.status(404).json({ error: 'Não há pacientes cadastrados' });
   }
-});
-
-app.get('/pacientes', (req, res) => {
   res.json(pacientes);
 });
 
 
+// Qtd pacientes 
+app.get('/pacientes/count', (req, res) => {
+  console.log('quantidade de pacientes foi pega');
+  return res.json({ count: pacientes.length });
+});
+
+
+// GET - busca paciente específico
 app.get('/pacientes/:ficha', (req, res) => {
   const ficha = parseInt(req.params.ficha);
   const paciente = pacientes.find(i => i.ficha === ficha);
-  if (paciente) {
-     return res.json(paciente);
-  } else {
-    res.status(404).json({ error: 'Paciente não encontrado' });
+
+  if (!paciente) {
+    console.log('erro')
+    return res.status(404).json({ error: 'Paciente não encontrado' });
   }
+
+  res.json(paciente);
 });
 
 /*post - adicionar novo paciente*/
 app.post('/pacientes', (req, res) => {
   const { nome, status } = req.body;
   if (!nome || !status) {
-    res.status(400).json({ error: 'Nome e status são obrigatórios' });
+    console.log('falta de dados')
+    return res.status(400).json({ error: 'Nome e status são obrigatórios' });
   }
-  const novoPaciente = {
+  let novoPaciente = {
     ficha: pacientes.length + 1,
     dados: { nome, status }
   };
   pacientes.push(novoPaciente);
-  res.status(201).json(novoPaciente);
+  console.log('paciente adicionado')
+    return res.status(201).json(novoPaciente);
 });
 
 
-/* put - atualização do paciente */
+// put - atualização do paciente 
 app.put('/pacientes/:ficha', (req, res) => {
   const ficha = parseInt(req.params.ficha);
   const { nome, status } = req.body;
-
   const paciente = pacientes.find(i => i.ficha === ficha);
-
-  if (!paciente) {
-    res.status(404).json({ error: 'Paciente não encontrado' });
+   if (pacientes.length === 0) {
+    return res.status(404).json({ error: 'Não há pacientes cadastrados' });
   }
-
+  if (!paciente) {
+    return res.status(404).json({ error: 'Paciente não encontrado' });
+  }
   if (nome) paciente.dados.nome = nome;
   if (status) paciente.dados.status = status;
-
-  res.json({ message: 'Paciente atualizado', paciente });
+    return res.json({ message: 'Paciente atualizado', paciente });
 });
 
 
-/*apagar cpf*/
+// apagar geral 
+app.delete('/pacientes', (req, res) => {
+  if (pacientes.length === 0) {
+    console.log("Tentaram deletar, mas a lista já estava vazia");
+    return res.json({ message: 'Não há pacientes' });
+  }
+
+  pacientes = [];
+  console.log("Todos os pacientes foram deletados com sucesso");
+  return res.json({ message: 'Pacientes deletados' });
+});
+
+
+/*apagar por id*/
 app.delete('/pacientes/:ficha', (req, res) => {
   const ficha = parseInt(req.params.ficha);
   const index = pacientes.findIndex(i => i.ficha === ficha);
   if ( index !== -1 ){
     const pacienteApagado = pacientes.splice(index, 1);
-    res.json(pacienteApagado[0]);
-  } else {
-      res.status(404).json({ error: 'Paciente não encontrado' });
+    
+    console.log(`paciente ${pacienteApagado} foi deletado`)
+    
+    return res.json(pacienteApagado[0]);
+    
   }
+      return res.status(404).json({ error: 'Paciente não encontrado' });
 });
 
 app.listen(port, () => {
   console.log(`Servidor em execução: http://localhost:${port}`);
+  console.log(`⠀
+⠀⠀⠀⢠⣾⣷⣦⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⣰⣿⣿⣿⣿⣷⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⢰⣿⣿⣿⣿⣿⣿⣷⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⢀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣦⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣤⣀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣶⣤⣄⣀⣀⣤⣤⣶⣾⣿⣿⣿⡷
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠁
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠁⠀
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠏⠀⠀⠀    Hello, admin!
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠏⠀⠀⠀⠀
+⣿⣿⣿⡇⠀⡾⠻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠁⠀⠀⠀⠀⠀
+⣿⣿⣿⣧⡀⠁⣀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡟⠉⢹⠉⠙⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣀⠀⣀⣼⣿⣿⣿⣿⡟⠀⠀⠀⠀⠀⠀⠀
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠋⠀⠀⠀⠀⠀⠀⠀⠀
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠛⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠛⠀⠤⢀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⣿⣿⣿⣿⠿⣿⣿⣿⣿⣿⣿⣿⠿⠋⢃⠈⠢⡁⠒⠄⡀⠈⠁⠀⠀⠀⠀⠀⠀⠀
+⣿⣿⠟⠁⠀⠀⠈⠉⠉⠁⠀⠀⠀⠀⠈⠆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+    `)
 });

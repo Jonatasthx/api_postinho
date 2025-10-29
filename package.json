@@ -1,14 +1,23 @@
 {
-  "name": "node_web",
+  "name": "api_postinho",
   "version": "1.0.0",
-  "main": "index.js",
+  "description": "",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jonatasthx/api_postinho.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
+  "bugs": {
+    "url": "https://github.com/Jonatasthx/api_postinho/issues"
+  },
+  "homepage": "https://github.com/Jonatasthx/api_postinho#readme",
   "dependencies": {
     "express": "^5.1.0"
   }
