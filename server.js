@@ -94,16 +94,25 @@ app.delete('/pacientes', (req, res) => {
 app.delete('/pacientes/:ficha', (req, res) => {
   const ficha = parseInt(req.params.ficha);
   const index = pacientes.findIndex(i => i.ficha === ficha);
-  if ( index !== -1 ){
-    console.log(`paciente ${pacienteApagado} foi deletado`)
-const pacienteApagado = pacientes.splice(index, 1);
-    
-    
-    return res.json(pacienteApagado[0]);
-    
+
+  if (index !== -1) {
+    const pacienteApagado = pacientes.splice(index, 1);
+
+    // Reatribuir fichas conforme a nova ordem do array
+    pacientes.forEach((p, i) => {
+      p.ficha = i + 1;
+    });
+
+    console.log(`Paciente ${pacienteApagado[0].nome} foi deletado`);
+    return res.json({
+      mensagem: `Paciente ${pacienteApagado[0].nome} foi deletado`,
+      pacientes
+    });
   }
-      return res.status(404).json({ error: 'Paciente não encontrado' });
+
+  return res.status(404).json({ error: 'Paciente não encontrado' });
 });
+
 
 app.listen(port, () => {
   console.log(`Servidor em execução: http://localhost:${port}`);
