@@ -85,6 +85,7 @@ app.delete('/pacientes', (req, res) => {
 
   pacientes = [];
   console.log("Todos os pacientes foram deletados com sucesso");
+  console.log('banco de dados zerado')
   return res.json({ message: 'Pacientes deletados' });
 });
 
@@ -94,9 +95,9 @@ app.delete('/pacientes/:ficha', (req, res) => {
   const ficha = parseInt(req.params.ficha);
   const index = pacientes.findIndex(i => i.ficha === ficha);
   if ( index !== -1 ){
-    const pacienteApagado = pacientes.splice(index, 1);
-    
     console.log(`paciente ${pacienteApagado} foi deletado`)
+const pacienteApagado = pacientes.splice(index, 1);
+    
     
     return res.json(pacienteApagado[0]);
     
